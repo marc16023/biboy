@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wynflæd & Valero Adventure</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .action-button {
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: 1px solid #000;
+            background-color: #eee;
+            border-radius: 5px;
+        }
+        .action-button:hover {
+            background-color: #ddd;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #000;
+            background-color: #fafafa;
+        }
+        .screen-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        .red-screen {
+            background-color: red;
+            opacity: 0.8;
+        }
+        .green-screen {
+            background-color: green;
+            opacity: 0.8;
+        }
+        .screen-overlay h2 {
+            color: white;
+            font-size: 36px;
+        }
+        .dragon-img {
+            width: 150px;
+            height: 150px;
+        }
+        #win-dragon {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="screen-overlay red-screen" id="red-screen">
+        <h2>Game Over. Restarting...</h2>
+    </div>
+
+    <div class="screen-overlay green-screen" id="green-screen">
+        <h2>Congratulations! You successfully cared for Wynflæd!</h2>
+        <img id="win-dragon" class="dragon-img" src="" alt="Happy Dragon">
+    </div>
+
+    <h1>Wynflæd & Valero Adventure</h1>
+    <p>Take care of the baby dragon Wynflæd by choosing the right products for each scenario. Your decisions will affect Wynflæd's health and happiness.</p>
+
+    <div class="game-info">
+        <div><strong>Wynflæd's Health:</strong> <span id="health">100</span></div>
+        <img id="dragon-img" class="dragon-img" src="" alt="Dragon Image">
+        <div><strong>Wynflæd's Happiness:</strong> <span id="happiness">100</span></div>
+    </div>
+
+    <h2>Scene 1: Initial Encounter</h2>
+    <p>You've just found Wynflæd in the forest. Choose a hand sanitizer before handling the baby dragon.</p>
+
+    <button class="action-button" onclick="handleChoice('safe', 0, 'Scene 2: Journey to the Inn', 'You chose the Forest-Safe Alcohol Gel. Wynflæd is calm and healthy!', 'happy')">Use Forest-Safe Alcohol Gel (★★★★★)</button>
+    <button class="action-button" onclick="handleChoice('cheap', -5, 'Scene 2: Journey to the Inn', 'You chose the Cheap Sanitizer. Wynflæd\'s skin becomes irritated and he loses health.', 'sad')">Use Cheap Sanitizer (★★☆☆☆)</button>
+
+    <div id="result"></div>
+
+    <script>
+        // Game variables
+        let health = 100;
+        let happiness = 100;
+
+        // Image URLs - replace these with your own images
+        const happyDragonImage = "file:///C:/Users/HP/Downloads/image%20(1).png";
+        const sadDragonImage = "file:///C:/Users/HP/Downloads/image.png";
+        const winDragonImage = "file:///C:/Users/HP/Downloads/image%20(1).png";
+
+        // Set initial dragon image
+        document.getElementById("dragon-img").src = happyDragonImage;
+
+        // Function to handle product choices and transitions
+        function handleChoice(productQuality, healthChange, nextScene, resultText, mood) {
+            health += healthChange;
+            happiness += healthChange; // Matching happiness to health for simplicity
+
+            // Update stats
+            updateStats();
+
+            // Update dragon mood
+            changeDragonMood(mood);
+
+            // Check if game ends
+            if (health <= 0 || happiness <= 0) {
+                gameOver();
+                return;
+            }
+
+            // Update result text and show next scene
+            document.getElementById("result").innerHTML = resultText + nextAction(nextScene);
+        }
+
+        // Function to update health and happiness stats
+        function updateStats() {
+            document.getElementById("health").innerHTML = health;
+            document.getElementById("happiness").innerHTML = happiness;
+        }
+
+        // Function to change dragon mood
+        function changeDragonMood(mood) {
+            const dragonImg = document.getElementById("dragon-img");
+            if (mood === "happy") {
+                dragonImg.src = happyDragonImage;
+            } else if (mood === "sad") {
+                dragonImg.src = sadDragonImage;
+            }
+        }
+
+        // Show next scene button
+        function nextAction(sceneTitle) {
+            if (sceneTitle === 'Scene 2: Journey to the Inn') {
+                return `
+                    <h2>Scene 2: Journey to the Inn</h2>
+                    <p>Choose the right wipes to clean Wynflæd's scales.</p>
+                    <button class="action-button" onclick="handleChoice('herbal', 0, 'Scene 3: Bath Time', 'You chose the Herbal Dragon Wipes. Wynflæd is happy and clean.', 'happy')">Use Herbal Dragon Wipes (★★★★★)</button>
+                    <button class="action-button" onclick="handleChoice('budget', -10, 'Scene 3: Bath Time', 'You chose the Budget Wipes. Wynflæd gets a rash and loses health.', 'sad')">Use Budget Wipes (★★☆☆☆)</button>
+                `;
+            }
+            else if (sceneTitle === 'Scene 3: Bath Time') {
+                return `
+                    <h2>Scene 3: Bath Time</h2>
+                    <p>Choose a soap for Wynflæd's bath.</p>
+                    <button class="action-button" onclick="handleChoice('gentle', 0, 'Scene 4: Sleep Time', 'You chose the Gentle Dragon Foam. Wynflæd is relaxed and clean.', 'happy')">Use Gentle Dragon Foam (★★★★★)</button>
+                    <button class="action-button" onclick="handleChoice('cheap', -10, 'Scene 4: Sleep Time', 'You chose the Cheap Soap Bar. Wynflæd\'s skin gets irritated and he loses health.', 'sad')">Use Cheap Soap Bar (★★☆☆☆)</button>
+                `;
+            }
+            else if (sceneTitle === 'Scene 4: Sleep Time') {
+                return `
+                    <h2>Scene 4: Sleep Time</h2>
+                    <p>Choose a blanket for Wynflæd to sleep with.</p>
+                    <button class="action-button" onclick="handleChoice('luxurious', 0, 'win', 'You chose the Luxurious Dragon Blanket. Wynflæd sleeps peacefully and wakes up happy!', 'happy')">Use Luxurious Dragon Blanket (★★★★★)</button>
+                    <button class="action-button" onclick="handleChoice('cheap', -15, 'win', 'You chose the Cheap Blanket. Wynflæd wakes up uncomfortable and cries throughout the night.', 'sad')">Use Cheap Blanket (★★☆☆☆)</button>
+                `;
+            } else if (sceneTitle === 'win') {
+                winGame();
+            }
+        }
+
+        // Game Over function
+        function gameOver() {
+            document.getElementById("red-screen").style.display = "flex";  // Show red screen on Game Over
+            setTimeout(function() {
+                location.reload();  // Restart the game after 2 seconds
+            }, 2000);
+        }
+
+        // Winning the game
+        function winGame() {
+            document.getElementById("green-screen").style.display = "flex";  // Show green screen on winning
+            document.getElementById("win-dragon").src = winDragonImage;  // Set winning dragon image
+            document.getElementById("win-dragon").style.display = "block";  // Show winning dragon image
+        }
+    </script>
+
+</body>
+</html>
